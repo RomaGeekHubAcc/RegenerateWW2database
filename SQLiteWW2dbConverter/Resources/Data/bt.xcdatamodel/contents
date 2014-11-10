@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2061" systemVersion="12D78" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="CDAudio" representedClassName="CDAudio" syncable="YES">
+        <attribute name="audioId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="audioInfo" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isAutoPlay" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isAutoStop" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isBackgroundAudio" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="itemId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="localization" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="position" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="items" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDItems" inverseName="audio" inverseEntity="CDItems" syncable="YES"/>
+    </entity>
+    <entity name="CDBackgrounds" representedClassName="CDBackgrounds" syncable="YES">
+        <attribute name="backgroundId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="CDContentTypes" representedClassName="CDContentTypes" syncable="YES">
+        <attribute name="contentId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="types" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDTypes" inverseName="contentTypes" inverseEntity="CDTypes" syncable="YES"/>
+    </entity>
+    <entity name="CDCovers" representedClassName="CDCovers" syncable="YES">
+        <attribute name="contentTypeId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="coverId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="path" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="CDDimensions" representedClassName="CDDimensions" syncable="YES">
+        <attribute name="color" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="dimensionId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="isFilter" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDTags" inverseName="dimensions" inverseEntity="CDTags" syncable="YES"/>
+    </entity>
+    <entity name="CDImages" representedClassName="CDImages" syncable="YES">
+        <attribute name="fullImage" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="hideWhiteBorder" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="imageId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="itemId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="position" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="thumbnailImage" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="visibleOnMap" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <relationship name="items" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDItems" inverseName="images" inverseEntity="CDItems" syncable="YES"/>
+    </entity>
+    <entity name="CDItems" representedClassName="CDItems" syncable="YES">
+        <attribute name="amendedUser" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="backgroundImage" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="contentTypeId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="copyrightExpiryDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="copyrightNotes" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="copyrightOwner" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="coverId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="dateFrom" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="dateMask" optional="YES" attributeType="Integer 16" syncable="YES"/>
+        <attribute name="dateSpot" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="dateTo" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="dateVisibleOnTimeline" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="favorite" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="includeTitle" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="ipadPriority" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="ipadVisible" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="iphonePriority" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="iphoneVisible" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isMap" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="isTimeLine" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="itemId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="itemLongText" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="itemShortText" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lastChangeDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="packId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="timelineImage" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="typeId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="visibleOnMapText" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <relationship name="audio" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDAudio" inverseName="items" inverseEntity="CDAudio" syncable="YES"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDImages" inverseName="items" inverseEntity="CDImages" syncable="YES"/>
+        <relationship name="packs" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="CDPacks" inverseName="items" inverseEntity="CDPacks" syncable="YES"/>
+        <relationship name="panorams" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDPanorams" inverseName="items" inverseEntity="CDPanorams" syncable="YES"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDTags" inverseName="items" inverseEntity="CDTags" syncable="YES"/>
+        <relationship name="types" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="CDTypes" inverseName="items" inverseEntity="CDTypes" syncable="YES"/>
+        <relationship name="videos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDVideos" inverseName="items" inverseEntity="CDVideos" syncable="YES"/>
+    </entity>
+    <entity name="CDPacks" representedClassName="CDPacks" syncable="YES">
+        <attribute name="packId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDItems" inverseName="packs" inverseEntity="CDItems" syncable="YES"/>
+    </entity>
+    <entity name="CDPanorams" representedClassName="CDPanorams" syncable="YES">
+        <attribute name="archiveInfo" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fullImage" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="itemId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="panoramaId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="position" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="thumbnailImage" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="visibleOnMap" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <relationship name="items" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDItems" inverseName="panorams" inverseEntity="CDItems" syncable="YES"/>
+    </entity>
+    <entity name="CDTags" representedClassName="CDTags" syncable="YES">
+        <attribute name="dimensionId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="radius" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="tagId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="dimensions" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="CDDimensions" inverseName="tags" inverseEntity="CDDimensions" syncable="YES"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDItems" inverseName="tags" inverseEntity="CDItems" syncable="YES"/>
+    </entity>
+    <entity name="CDTypes" representedClassName="CDTypes" syncable="YES">
+        <attribute name="contentTypeId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="typeId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <relationship name="contentTypes" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDContentTypes" inverseName="types" inverseEntity="CDContentTypes" syncable="YES"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDItems" inverseName="types" inverseEntity="CDItems" syncable="YES"/>
+    </entity>
+    <entity name="CDVideos" representedClassName="CDVideos" syncable="YES">
+        <attribute name="cover" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="itemId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="localization" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="position" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="videoId" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="videoUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="visibleOnMap" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <relationship name="items" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="CDItems" inverseName="videos" inverseEntity="CDItems" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="CDAudio" positionX="216" positionY="315" width="128" height="195"/>
+        <element name="CDBackgrounds" positionX="439" positionY="-423" width="128" height="75"/>
+        <element name="CDContentTypes" positionX="-65" positionY="-423" width="128" height="105"/>
+        <element name="CDCovers" positionX="198" positionY="-423" width="128" height="105"/>
+        <element name="CDDimensions" positionX="448" positionY="-237" width="128" height="120"/>
+        <element name="CDImages" positionX="-443" positionY="132" width="128" height="178"/>
+        <element name="CDItems" positionX="-63" positionY="-270" width="128" height="598"/>
+        <element name="CDPacks" positionX="439" positionY="171" width="128" height="90"/>
+        <element name="CDPanorams" positionX="-297" positionY="333" width="128" height="178"/>
+        <element name="CDTags" positionX="178" positionY="-267" width="128" height="165"/>
+        <element name="CDTypes" positionX="-333" positionY="-423" width="128" height="120"/>
+        <element name="CDVideos" positionX="-56" positionY="366" width="128" height="180"/>
+    </elements>
+</model>

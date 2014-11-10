@@ -1,0 +1,82 @@
+//
+//  PrefixHeader.pch
+//  SQLiteWW2dbConverter
+//
+//  Created by Roman Rybachenko on 10/17/14.
+//  Copyright (c) 2014 Roman Rybachenko. All rights reserved.
+//
+
+#ifndef SQLiteWW2dbConverter_PrefixHeader_pch
+#define SQLiteWW2dbConverter_PrefixHeader_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import "MDDebug.h"
+#import "Utilities.h"
+
+
+
+// KEYS FOR TABLE ZIMPSYNCABLEOBJECT
+
+static NSString * const z_pk = @"Z_PK";
+static NSString * const z_ent = @"Z_ENT";
+static NSString * const z_contentPack = @"ZCONTENTPACK";
+static NSString * const z_name = @"ZNAME";
+static NSString * const z_name1 = @"ZNAME1";
+static NSString * const z_name2 = @"ZNAME2";
+static NSString * const z_name3 = @"ZNAME3";
+static NSString * const z_name4 = @"ZNAME4";
+static NSString * const z_name5 = @"ZNAME5";
+static NSString * const z_name6 = @"ZNAME6";
+static NSString * const z_name7 = @"ZNAME7";
+static NSString * const z_name8 = @"ZNAME8";
+static NSString * const z_name9 = @"ZNAME9";
+static NSString * const z_name10 = @"ZNAME10";
+static NSString * const z_title = @"ZTITLE";
+static NSString * const z_summary = @"ZSUMMARY";
+static NSString * const z_text = @"ZTEXT";
+static NSString * const z_posterFrameFileName = @"ZPOSTERFRAMEFILENAME";
+static NSString * const z_editorIconNum = @"ZEDITORICONNUM";
+static NSString * const z_lastmodified = @"ZLASTMODIFIED";
+static NSString * const z_dateFrom = @"ZDATEFROM";
+static NSString * const z_dateTo = @"ZDATETO";
+static NSString * const z_url = @"ZURL";
+static NSString * const z_type = @"ZTYPE";
+static NSString * const z_item = @"ZITEM";
+static NSString * const z_item1 = @"ZITEM1";
+static NSString * const z_filename1 = @"ZFILENAME1";
+static NSString * const z_isFilter = @"ZSHOWSINFILTERBAR";
+static NSString * const z_dimension = @"ZDIMENSION";
+static NSString * const z_latitude = @"ZLATITUDE";
+static NSString * const z_longtitude = @"ZLONGITUDE";
+static NSString * const z_radius = @"ZRADIUS";
+
+//////////////////////////////////////////////////////
+
+// KEYS FOR TABLE Z_7TAGS
+static NSString * const z_7tagId = @"Z_18TAGS";
+static NSString * const z_7itemId = @"Z_7EVENTS1";
+
+//////////////////////////////////////////////////////
+
+// KEYS FOR NEW DATABASE:
+//                       PACKS
+static NSString * const packId = @"packId";
+static NSString * const pack_title = @"title";
+
+
+//////////////////////////////////////////////////////
+
+static NSString * const ww2_db_name = @"ww2_db.sqlite";
+static NSString * const new_db_name = @"new_db.sqlite";
+
+
+
+
+
+
+
+#endif

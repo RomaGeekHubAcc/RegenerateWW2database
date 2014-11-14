@@ -19,7 +19,7 @@
 @property (nonatomic, assign) BOOL visibleOnMap;
 @property (nonatomic, retain) NSString *cover;
 @property (nonatomic, strong) NSString *thumbnailCover;
-@property (nonatomic, assign) NSInteger *localization;
+@property (nonatomic, assign) NSInteger localization;
 
 @property (nonatomic, strong) NSString *videoCoverOldName;
 

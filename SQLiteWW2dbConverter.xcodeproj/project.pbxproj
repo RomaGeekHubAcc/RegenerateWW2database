@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A823275D1A0A1CC800CE2A6C /* SLItemToTag.m in Sources */ = {isa = PBXBuildFile; fileRef = A823275C1A0A1CC800CE2A6C /* SLItemToTag.m */; };
+		A826BD791A13953300FA8FD7 /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = A826BD781A13953300FA8FD7 /* MBProgressHUD.m */; };
 		A83043F51A0268B600613184 /* .apdisk in Resources */ = {isa = PBXBuildFile; fileRef = A8303BD41A02689100613184 /* .apdisk */; };
 		A83043F61A0268B600613184 /* .com.apple.timemachine.supported in Resources */ = {isa = PBXBuildFile; fileRef = A8303BD51A02689100613184 /* .com.apple.timemachine.supported */; };
 		A83043F71A0268B600613184 /* jfull_00AFB83B-50D7-4F14-BA6E-B9259CC7C0F4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = A8303BD61A02689200613184 /* jfull_00AFB83B-50D7-4F14-BA6E-B9259CC7C0F4.jpg */; };
@@ -2151,6 +2152,8 @@
 /* Begin PBXFileReference section */
 		A823275B1A0A1CC800CE2A6C /* SLItemToTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SLItemToTag.h; sourceTree = "<group>"; };
 		A823275C1A0A1CC800CE2A6C /* SLItemToTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SLItemToTag.m; sourceTree = "<group>"; };
+		A826BD771A13953300FA8FD7 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		A826BD781A13953300FA8FD7 /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		A8303BD41A02689100613184 /* .apdisk */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = .apdisk; sourceTree = "<group>"; };
 		A8303BD51A02689100613184 /* .com.apple.timemachine.supported */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .com.apple.timemachine.supported; sourceTree = "<group>"; };
 		A8303BD61A02689200613184 /* jfull_00AFB83B-50D7-4F14-BA6E-B9259CC7C0F4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "jfull_00AFB83B-50D7-4F14-BA6E-B9259CC7C0F4.jpg"; sourceTree = "<group>"; };
@@ -4345,6 +4348,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A826BD761A13953300FA8FD7 /* MBProgressHud */ = {
+			isa = PBXGroup;
+			children = (
+				A826BD771A13953300FA8FD7 /* MBProgressHUD.h */,
+				A826BD781A13953300FA8FD7 /* MBProgressHUD.m */,
+			);
+			path = MBProgressHud;
+			sourceTree = "<group>";
+		};
 		A8303BD31A02689100613184 /* WW2Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -6560,6 +6572,7 @@
 		A8F48C6319F103A000E10003 /* Externals */ = {
 			isa = PBXGroup;
 			children = (
+				A826BD761A13953300FA8FD7 /* MBProgressHud */,
 				A8304C211A03843E00613184 /* DebugAndUtils */,
 				A8F48C6419F103A000E10003 /* fmdb */,
 			);
@@ -8867,6 +8880,7 @@
 				A8F48CFE19F12A3B00E10003 /* SLPanoram.m in Sources */,
 				A8F48CF919F12A3B00E10003 /* SLCover.m in Sources */,
 				A8F48CF619F12A3B00E10003 /* SLAudio.m in Sources */,
+				A826BD791A13953300FA8FD7 /* MBProgressHUD.m in Sources */,
 				A8F48C7319F103A000E10003 /* FMDatabaseQueue.m in Sources */,
 				A8F48C7F19F107CF00E10003 /* CoreDataManager.m in Sources */,
 				A8F48C2419F100C700E10003 /* main.m in Sources */,

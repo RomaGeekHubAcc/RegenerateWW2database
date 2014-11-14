@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>C46A0532-B6DC-4ACD-8AEB-373B7657F672</string>
+	<key>IDESourceControlProjectName</key>
+	<string>SQLiteWW2dbConverter</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>408E2AB41E915FFE14E52F3C95F0A8A8B89AAD4E</key>
+		<string>github.com:RomaGeekHubAcc/RegenerateWW2database.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>SQLiteWW2dbConverter.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>408E2AB41E915FFE14E52F3C95F0A8A8B89AAD4E</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:RomaGeekHubAcc/RegenerateWW2database.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>408E2AB41E915FFE14E52F3C95F0A8A8B89AAD4E</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>408E2AB41E915FFE14E52F3C95F0A8A8B89AAD4E</string>
+			<key>IDESourceControlWCCName</key>
+			<string>SQLiteWW2dbConverter</string>
+		</dict>
+	</array>
+</dict>
+</plist>

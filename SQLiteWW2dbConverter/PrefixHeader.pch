@@ -18,6 +18,9 @@
 #import "Utilities.h"
 
 
+#define DATE_FORMAT @"yyyy-MM-dd HH:mm:ss"
+#define DATE_FORMAT_TITLE @"dd MMMM, yyyy"
+
 
 // KEYS FOR TABLE ZIMPSYNCABLEOBJECT
 

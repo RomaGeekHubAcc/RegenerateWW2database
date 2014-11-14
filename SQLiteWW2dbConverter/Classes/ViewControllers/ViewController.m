@@ -7,6 +7,9 @@
 //
 
 
+//PATH  = /Users/roman_rybachenko/Library/Developer/CoreSimulator/Devices/71B6C855-D4B0-407B-B9E1-0DA9D5F5FDA1/data/Containers/Data/Application/D45D067B-85B6-4478-902A-ED58404F441F/Documents
+
+
 #import "FMDBManager.h"
 #import "FMDB.h"
 #import "SLItem.h"
@@ -18,6 +21,7 @@
 #import "SLDimension.h"
 #import "SLTag.h"
 #import "SLItemToTag.h"
+#import "DateFormatterManager.h"
 
 #import "ViewController.h"
 
@@ -73,8 +77,9 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 #pragma mark - Action methods
 
 - (IBAction)convertDB:(id)sender {
-    [self.activityIndicator startAnimating];
     self.activityIndicator.hidden = NO;
+    [self.activityIndicator startAnimating];
+    
     [self deleteConvertedDB:nil];
     
     [self fetchDataFromOldDatabase];
@@ -98,34 +103,93 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 
 #pragma mark - Private methods
 
--(void) fetchDataFromOldDatabase {
+-(void) fetchDataFromOldDatabase { $c
     [[FMDBManager sharedInstance] openDataBaseWithName:ww2_db_name];
     
-//    items = [self getAllItems];
-//    images = [self getAllImageItems];
+    items = [self getAllItems];
+    images = [self getAllImageItems];
     videos = [self getAllVideos];
     contentPacks = [self getAllPacks];
-//    types = [self getAllTypes];
-//    dimensions = [self getAllDimensions];
-//    tags = [self getAllTags];
+    types = [self getAllTypes];
+    dimensions = [self getAllDimensions];
+    tags = [self getAllTags];
     itemsToTagRelationships = [self getAllItemToTagRelationship];
     
     [[FMDBManager sharedInstance] closeDatabase];
 }
 
--(void) writeFetchedDataToNewDatabase {
+-(void) writeFetchedDataToNewDatabase { $c
     if ([[FMDBManager sharedInstance] openDataBaseWithName:new_db_name]) {
-        [self writePacks];
-        [self writeItemsToTagsRelationship];
+        [self makeRecordItems];
+        [self makeRecordPacks];
+        [self makeRecordItemsToTagsRelationship];
+        [self makeRecordVideos];
+        [self makeRecordImages];
+        [self makeRecordTypes];
+        [self makeRecordDimensions];
+        [self makeRecordTags];
+        
     }
     [[FMDBManager sharedInstance] closeDatabase];
 }
 
+-(void) makeRecordItems { $c
+    for (SLItem *item in items) {
+        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:@"INSERT OR REPLACE INTO ITEMS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                          @(item.itemId),
+                          item.title,
+                          @(item.includeTitle),
+                          item.itemShortText,
+                          item.itemLongText,
+                          @(item.visibleOnMapText),
+                          @(item.isMap),
+                          @(item.ipadVisible),
+                          @(item.iphoneVisible),
+                          @(item.ipadPriority),
+                          @(item.iphonePriority),
+                          [DateFormatterManager stringFromDate:item.dateSpot
+                                                    withFormat:DATE_FORMAT],
+                          [DateFormatterManager stringFromDate:item.dateSpot
+                                                         withFormat:DATE_FORMAT],
+                          [DateFormatterManager stringFromDate:item.dateFrom
+                                                    withFormat:DATE_FORMAT],
+                          [DateFormatterManager stringFromDate:item.dateFrom
+                                                    withFormat:DATE_FORMAT],
+                          [DateFormatterManager stringFromDate:item.dateTo
+                                                    withFormat:DATE_FORMAT],
+                          [DateFormatterManager stringFromDate:item.dateTo
+                                                    withFormat:DATE_FORMAT],
+                          @(item.dateMask),
+                          @(item.dateVisibleOnTimeline),
+                          item.timelineImage,
+                          [NSNull null],
+                          @(item.packId),
+                          @(item.typeId),
+                          @(item.contentTypeId),
+                          @(item.coverId),
+                          [NSNull null],
+                          [NSNull null],
+                          [NSNull null],
+                          @(item.favorite),
+                          item.amendedUser,
+                          [DateFormatterManager stringFromDate:item.lastChangeDate
+                                                    withFormat:DATE_FORMAT]
+                          ];
+        
+        if (!isSuccess) {
+            $l("-- insert ITEMS error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
+        }
+    }
+    $l("\n\n --- ITEMS inserting finished");
+}
 
--(void) writeItemsToTagsRelationship {
+-(void) makeRecordItemsToTagsRelationship { $c
     for (SLItemToTag *itTagRel in itemsToTagRelationships) {
         NSString *executeUpdateStr = @"INSERT OR REPLACE INTO ITEMS_TO_TAGS_MAPPING VALUES (?, ?, ?)";
-        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:executeUpdateStr, [NSNumber numberWithInteger:itTagRel.itemsToTagsMappingId], [NSNumber numberWithInteger:itTagRel.itemId], [NSNumber numberWithInteger:itTagRel.tagId]];
+        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:executeUpdateStr,
+                          [NSNumber numberWithInteger:itTagRel.itemsToTagsMappingId],
+                          [NSNumber numberWithInteger:itTagRel.itemId],
+                          [NSNumber numberWithInteger:itTagRel.tagId]];
         
         if (!isSuccess) {
             $l("-- insert ITEMS_TO_TAGS_MAPPING error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
@@ -134,31 +198,106 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
     $l("\n\n --- ITEMS_TO_TAGS_MAPPING inserting finished");
 }
 
--(void) writePacks {
+-(void) makeRecordPacks { $c
     for (SLPack *packItem in contentPacks) {
         NSString *executeUpdateStr = @"INSERT OR REPLACE INTO PACKS VALUES (?, ?)";
-        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:executeUpdateStr, [NSNumber numberWithInteger:packItem.packId], packItem.title];
+        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:executeUpdateStr,
+                          @(packItem.packId),
+                          packItem.title];
         
         if (!isSuccess) {
-            $l("-- insert PACKS error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
+            $l("\n-- insert PACKS error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
         }
     }
     $l("\n\n --- PACKS inserting finished");
 }
 
--(void) writeVideos {
-    for (SLVideo *videoItem in videos) {
-        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:@"INSERT OR REPLACE INTO VIDEOS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [NSNumber numberWithInteger:videoItem.videoId], videoItem.title, videoItem.cover, videoItem.thumbnailCover, videoItem.videoUrl, videoItem.position, videoItem.visibleOnMap, videoItem.itemId, videoItem.localization];
+-(void) makeRecordDimensions { $c
+    for (SLDimension *dimItem in dimensions) {
+        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:@"INSERT OR REPLACE INTO DIMENSIONS VALUES (?, ?, ?, ?)",
+                          @(dimItem.dimensionId),
+                          dimItem.title,
+                          @(dimItem.isFilter),
+                          @(dimItem.color)];
         
         if (!isSuccess) {
-            $l("-- insert VIDEOS error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
+            $l("\n-- insert DIMENSIONS error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
+        }
+    }
+    $l("\n\n --- DIMENSIONS inserting finished");
+}
+
+-(void) makeRecordTags { $c
+    for (SLTag *aTag in tags) {
+        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:@"INSERT OR REPLACE INTO TAGS VALUES (?, ?, ?, ?, ?, ?)",
+                          @(aTag.tagId),
+                          aTag.title,
+                          @(aTag.latitude),
+                          @(aTag.longitude),
+                          @(aTag.radius),
+                          @(aTag.dimensionId)];
+        
+        if (!isSuccess) {
+            $l("\n-- insert TAGS error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
+        }
+    }
+    $l("\n\n --- TAGS inserting finished");
+}
+
+-(void) makeRecordTypes { $c
+    for (SLType *aType in types) {
+        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:@"INSERT OR REPLACE INTO TYPES VALUES (?, ?, ?)",
+                          @(aType.typeId),
+                          aType.title,
+                          @(aType.contenTypeId)];
+        
+        if (!isSuccess) {
+            $l("\n-- insert TYPES error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
+        }
+    }
+    $l("\n\n --- TYPES inserting finished");
+}
+
+-(void) makeRecordVideos { $c
+    for (SLVideo *videoItem in videos) {
+        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:@"INSERT OR REPLACE INTO VIDEOS VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                          [NSNumber numberWithInteger:videoItem.videoId],
+                          videoItem.title,
+                          videoItem.cover,
+                          videoItem.thumbnailCover,
+                          videoItem.videoUrl,
+                          [NSNumber numberWithInteger:videoItem.position],
+                          [NSNumber numberWithInteger:videoItem.visibleOnMap],
+                          [NSNumber numberWithInteger:videoItem.itemId],
+                          [NSNumber numberWithInteger:videoItem.localization]];
+        
+        if (!isSuccess) {
+            $l("\n-- insert VIDEOS error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
         }
     }
      $l("\n\n --- VIDEOS inserting finished");
 }
 
+-(void) makeRecordImages { $c
+    for (SLImage *imgItem in images) {
+        BOOL isSuccess = [[FMDBManager sharedInstance].fmDataBase executeUpdate:@"INSERT OR REPLACE INTO IMAGES VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                          @(imgItem.imageId),
+                          imgItem.title,
+                          imgItem.thumbnailImage,
+                          imgItem.fullImage,
+                          @(imgItem.position),
+                          @(imgItem.hideWhiteBorder),
+                          @(imgItem.visibleOnMap),
+                          @(imgItem.itemId)];
+        
+        if (!isSuccess) {
+            $l("\n-- insert IMAGES error - > %@", [[FMDBManager sharedInstance].fmDataBase lastError]);
+        }
+    }
+}
 
--(NSMutableArray *) getAllItems {
+
+-(NSMutableArray *) getAllItems { $c
     
     NSInteger primaryKey;
     
@@ -178,15 +317,17 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
         
         item.itemId = [rs intForColumn:z_pk];
         item.packId = [rs intForColumn:z_contentPack];
-        item.title = [self getTitleWithFMResultSet:rs];
+        item.title = [rs stringForColumn:z_title];
+        item.amendedUser = @"admin";
+        item.ipadVisible = YES;
         
         primaryKey = [rs intForColumn:z_ent];
-        
         if (primaryKey == 6) { //photo
             item.contentTypeId = 23;
             item.coverId = 28;
             item.typeId = NewDbTypePhoto;
             item.imageName = [rs stringForColumn:z_filename1];
+            item.title = [rs stringForColumn:z_name3];
             if (!item.imageName) {
                 continue;
             }
@@ -195,14 +336,15 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
             item.contentTypeId = 24;
             item.coverId = 29;
             item.typeId = NewDbTypeVideo;
+            item.title = [rs stringForColumn:z_name2];
             if (![rs stringForColumn:z_posterFrameFileName]) {
                 continue;
             }
         }
-        item.timelineImage = [NSString stringWithFormat:@"timelineImage%ld.png", (long)item.itemId];
+        item.timelineImage = [NSString stringWithFormat:@"timelineImage%ld", (long)item.itemId];
         
-        item.itemShortText = [rs stringForColumn:z_summary];
-        item.itemLongText = [rs stringForColumn:z_text];
+        item.itemShortText = [rs stringForColumn:z_summary] ? [rs stringForColumn:z_summary] : @"";
+        item.itemLongText = [rs stringForColumn:z_text] ? [rs stringForColumn:z_text] : @"";
         
         item.lastChangeDate = [self getRightDateFromDate:[rs dateForColumn:z_lastmodified]];
         
@@ -237,16 +379,20 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 //            }
             
             if (ztype == 5443) {  // photo
-                item.itemId = [self eventTypeWithLongText:item.itemLongText];
-                if (item.itemId == NewDbTypeEventShort) {
+                item.typeId = [self eventTypeWithLongText:item.itemLongText];
+                if (item.typeId == NewDbTypeEventShort) {
                     item.contentTypeId = NewDbContentTypeEventShort;
-                } else if (item.itemId == NewDbTypeEventLong) {
+                } else if (item.typeId == NewDbTypeEventLong) {
                     item.contentTypeId = NewDbContentTypeEventLong;
                 }
             }
             
+            if (ztype == 5444) {
+                // may be, will be added later.. Items with this type haven't date
+            }
+            
             if (ztype == 5445) {
-                item.itemId = NewDbTypeEventLong;
+                item.typeId = NewDbTypeEventLong;
                 item.contentTypeId = NewDbContentTypeEventLong;
                 
             }
@@ -266,9 +412,19 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
             }
             item.coverId = [self coverIdForContentType:item.contentTypeId];
             
-            if (!item.itemShortText) {
+            if (!item.itemShortText.length) {
                 $l(@"item #%li skiped. reason: item hasn't itemShortText", item.itemId);
                 continue;
+            }
+        }
+        if (!item.title) {
+//            item.title = [DateFormatterManager stringFromDate:item.date withFormat:DATE_FORMAT_TITLE];
+            if (item.packId == 44) {
+                item.title = @"Pacific War Day by Day";
+            } else if (item.packId == 43) {
+                item.title = @"World War II Day by Day";
+            } else {
+                item.title = [DateFormatterManager stringFromDate:item.date withFormat:DATE_FORMAT_TITLE];
             }
         }
         
@@ -308,19 +464,19 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
     [toRemoveObjIndexes removeAllIndexes];
     
     
-    for (int i = 0; i < itemsArray.count; i++) {
-        SLItem *item = itemsArray[i];
-        $l(@"--item %d:\n  item.itemId = %ld, \n  item.typeId = %ld, \n  item.contenType = %ld, \n  item.coverId = %ld, \n  item.title = %@, \n  item.shortText = %@ \n  item.longText = %@ \n  item.date = %@\n\n", i, (long)item.itemId, (long)item.typeId, (long)item.contentTypeId, (long)item.coverId, item.title, item.itemShortText, item.itemLongText, item.date);
-        if (item.contentTypeId == 29) {
-            $l(@"--- !!! --item %d:\n  item.itemId = %ld, \n  item.contenType = %ld, \n item.coverId = %ld, \n  item.title = %@, \n  item.shortText = %@ \n  item.longText = %@ \n  item.date = %@\n\n", i, (long)item.itemId, (long)item.contentTypeId, (long)item.coverId, item.title, item.itemShortText, item.itemLongText, item.date);
-        }
-    }
+//    for (int i = 0; i < itemsArray.count; i++) {
+//        SLItem *item = itemsArray[i];
+//        $l(@"--item %d:\n  item.itemId = %ld, \n  item.typeId = %ld, \n  item.contenType = %ld, \n  item.coverId = %ld, \n  item.title = %@, \n  item.shortText = %@ \n  item.longText = %@ \n  item.date = %@\n\n", i, (long)item.itemId, (long)item.typeId, (long)item.contentTypeId, (long)item.coverId, item.title, item.itemShortText, item.itemLongText, item.date);
+//        if (item.contentTypeId == 29) {
+//            $l(@"--- !!! --item %d:\n  item.itemId = %ld, \n  item.contenType = %ld, \n item.coverId = %ld, \n  item.title = %@, \n  item.shortText = %@ \n  item.longText = %@ \n  item.date = %@\n\n", i, (long)item.itemId, (long)item.contentTypeId, (long)item.coverId, item.title, item.itemShortText, item.itemLongText, item.date);
+//        }
+//    }
     $l(@"\n\n -- Getting items finished, total count = %d", (int)itemsArray.count);
     return itemsArray;
 }
 
 
--(NSMutableArray *) getAllImageItems {
+-(NSMutableArray *) getAllImageItems { $c
     NSMutableArray *allImages = [[NSMutableArray alloc] init];
     
     int counter = 1;
@@ -346,7 +502,15 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
             imageItem.thumbnailImage = [NSString stringWithFormat:@"thumbnailImage%ld.png", (long)imageItem.imageId];
             imageItem.fullImage = [NSString stringWithFormat:@"fullImage%ld.png", (long)imageItem.imageId];
             
-            [imageItem generateFullAndThumnailImages];
+            if (imageItem.imageId == 82) {
+                //
+            }
+            
+            BOOL imageGenerated = [imageItem generateFullAndThumnailImages];
+            if (!imageGenerated) {
+                $l("--- imageItem %d skipped", imageItem.itemId);
+                continue;
+            }
             counter ++;
             
             [allImages addObject:imageItem];
@@ -359,7 +523,7 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
     return allImages;
 }
 
--(NSMutableArray *) getAllVideos {
+-(NSMutableArray *) getAllVideos { $c
     NSMutableArray *allVideos = [[NSMutableArray alloc] init];
     
     int counter = 1;
@@ -400,7 +564,7 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 }
 
 
--(NSMutableArray *) getAllPacks {
+-(NSMutableArray *) getAllPacks { $c
     NSMutableArray *allPacks  = [[NSMutableArray alloc] init];
     
     FMResultSet *rs = [[FMDBManager sharedInstance].fmDataBase executeQuery:@"SELECT * FROM ZIMPSYNCABLEOBJECT"];
@@ -427,7 +591,7 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 }
 
 
--(NSMutableArray *) getAllDimensions {
+-(NSMutableArray *) getAllDimensions { $c
     NSMutableArray *allDimensions = [[NSMutableArray alloc] init];
     FMResultSet *rs = [[FMDBManager sharedInstance].fmDataBase executeQuery:@"SELECT * FROM ZIMPSYNCABLEOBJECT"];
     while ([rs next]) {
@@ -453,7 +617,7 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
     return allDimensions;
 }
 
--(NSMutableArray *) getAllTags {
+-(NSMutableArray *) getAllTags { $c
     NSMutableArray *allTags = [[NSMutableArray alloc] init];
     FMResultSet *rs = [[FMDBManager sharedInstance].fmDataBase executeQuery:@"SELECT * FROM ZIMPSYNCABLEOBJECT"];
     while ([rs next]) {
@@ -490,69 +654,75 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 }
 
 
--(NSMutableArray *) getAllTypes {
+-(NSMutableArray *) getAllTypes { $c
     NSMutableArray *allTypes = [[NSMutableArray alloc] init];
     
     FMResultSet *rs = [[FMDBManager sharedInstance].fmDataBase executeQuery:@"SELECT * FROM ZIMPSYNCABLEOBJECT"];
     while ([rs next]) {
         NSInteger ent = [rs intForColumn:z_ent];
-        if (ent == 21) {
-            SLType *typeItem = [[SLType alloc] init];
-            
-            typeItem.title = [rs stringForColumn:z_name10];
-            typeItem.zeditoriconnum = [rs intForColumn:z_editorIconNum];
-            switch (typeItem.typeId) {
-                case 5441:                       // айтемів цього типу в базі нема
-                    typeItem.typeId = 5441;
-                    typeItem.contenTypeId = 100; // temp
-                    break;
-                case 5442:
-                    typeItem.typeId = NewDbTypeVideo;
-                    typeItem.contenTypeId = 24;  // VIDEO
-                     break;
-                case 5443:
-                    typeItem.typeId = NewDbTypePhoto;
-                    typeItem.contenTypeId = 23;  // PHOTO
-                    break;
-                case 5444:
-#warning вияснити з цим типом
-                    typeItem.typeId = 5444;
-                    typeItem.contenTypeId = 101; // temp
-                    break;
-                case 5445:
-#warning розібратись із цим типом і з показ фото якщо є
-                    typeItem.typeId = NewDbTypeEventLong;
-                    typeItem.contenTypeId = 21;  // EVENT(long)
-                    break;
-                case 5446:
-#warning вияснити з цим типом
-                    typeItem.typeId = 5446;
-                    typeItem.contenTypeId = 102; // temp
-                    break;
-                case 5447:
-                    typeItem.typeId = NewDbTypeBiographies;
-                    typeItem.contenTypeId = 19;  // Person
-                    break;
-                case 5448:                       // айтемів цього типу в базі нема
-                    typeItem.typeId = 5448;
-                    typeItem.contenTypeId = 104; // temp
-                    break;
-                case 5449:
-                    typeItem.typeId = NewDbTypeEventShort;
-                    typeItem.contenTypeId = NewDbContentTypeEventShort;  // EVENT(short)
-                    break;
-                    
-                default:
-                    break;
-            }
+        if (ent != 21) {
+            continue;
         }
+        
+        SLType *typeItem = [[SLType alloc] init];
+        typeItem.title = [rs stringForColumn:z_name10];
+        typeItem.zeditoriconnum = [rs intForColumn:z_editorIconNum];
+        
+        NSInteger rowId = [rs intForColumn:z_pk];
+        switch (rowId) {
+            case 5441:                       // айтемів цього типу в базі нема
+                continue;
+//                typeItem.typeId = 5441;
+//                typeItem.contenTypeId = 100; // temp
+                break;
+            case 5442:
+                typeItem.typeId = NewDbTypeVideo;
+                typeItem.contenTypeId = 24;  // VIDEO
+                break;
+            case 5443:
+                typeItem.typeId = NewDbTypePhoto;
+                typeItem.contenTypeId = 23;  // PHOTO
+                break;
+            case 5444:
+#warning вияснити з цим типом
+                typeItem.typeId = 5444;
+                typeItem.contenTypeId = 101; // temp
+                break;
+            case 5445:
+#warning розібратись із цим типом і з показ фото якщо є
+                typeItem.typeId = NewDbTypeEventLong;
+                typeItem.contenTypeId = 21;  // EVENT(long)
+                break;
+            case 5446:
+#warning вияснити з цим типом
+                typeItem.typeId = 5446;
+                typeItem.contenTypeId = 102; // temp
+                break;
+            case 5447:
+                typeItem.typeId = NewDbTypeBiographies;
+                typeItem.contenTypeId = 19;  // Person
+                break;
+            case 5448:                       // айтемів цього типу в базі нема
+                continue;
+//                typeItem.typeId = 5448;
+//                typeItem.contenTypeId = 104; // temp
+                break;
+            case 5449:
+                typeItem.typeId = NewDbTypeEventShort;
+                typeItem.contenTypeId = NewDbContentTypeEventShort;  // EVENT(short)
+                break;
+                
+            default:
+                break;
+        }
+        [allTypes addObject:typeItem];
     }
     
     return allTypes;
 }
 
 
--(NSMutableArray *) getAllItemToTagRelationship {
+-(NSMutableArray *) getAllItemToTagRelationship { $c
     NSMutableArray *itemsToTagsArr = [[NSMutableArray alloc] init];
     unsigned int counter = 1;
     

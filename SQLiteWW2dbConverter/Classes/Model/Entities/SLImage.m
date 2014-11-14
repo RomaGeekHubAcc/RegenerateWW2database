@@ -41,12 +41,105 @@ static NSString * const thumbnailImagesfolderName = @"thumbnail";
 #pragma mark - Interface methods
 
 -(BOOL) generateFullAndThumnailImages {
+//    NSString *thumbnailImageName = [NSString stringWithFormat:@"thumb_%@", self.oldImageName];
+//    NSString *pathToFile = [[NSBundle mainBundle] pathForResource:thumbnailImageName
+//                                                           ofType:nil];
+//    NSString *copyFilePath = [Utilities getPathForFolder:thumbnailImagesfolderName];
+//    copyFilePath = [copyFilePath stringByAppendingPathComponent: self.thumbnailImage];
+//    if (!pathToFile || !copyFilePath) {
+//        return NO;
+//    }
+//    if ([[NSFileManager defaultManager] fileExistsAtPath:copyFilePath]) {
+//        [[NSFileManager defaultManager] removeItemAtPath:copyFilePath
+//                                                   error:nil];
+//    }
+//    NSError *error = nil;
+//    BOOL isSuccess = [[NSFileManager defaultManager] copyItemAtPath:pathToFile
+//                                                             toPath:copyFilePath
+//                                                              error:&error];
+//    if (!isSuccess) {
+//        $l(@"copy image error -> %@", error);
+//        return NO;
+//    } else {
+//        $l(@"---thumbnailImage%d added", (int)self.itemId);
+//    }
+//    
+//    
+//    NSString *fullImageName = [NSString stringWithFormat:@"jfull_%@", self.oldImageName];
+//    fullImageName = [Utilities replacePathExtentionTo:@"jpg" forString:fullImageName];
+//    
+//    pathToFile = [[NSBundle mainBundle] pathForResource:fullImageName
+//                                                 ofType:nil];
+//    copyFilePath = [Utilities getPathForFolder:fullImagesfolderName];
+//    copyFilePath = [copyFilePath stringByAppendingPathComponent: self.fullImage];
+//    
+//    if (!pathToFile || !copyFilePath) {
+//        return NO;
+//    }
+//    if ([[NSFileManager defaultManager] fileExistsAtPath:copyFilePath]) {
+//        [[NSFileManager defaultManager] removeItemAtPath:copyFilePath
+//                                                   error:nil];
+//    }
+//    isSuccess = [[NSFileManager defaultManager] copyItemAtPath:pathToFile
+//                                                        toPath:copyFilePath
+//                                                         error:&error];
+//    if (!isSuccess) {
+//        $l(@"copy image error -> %@", error);
+//        return NO;
+//    } else {
+//        $l(@"---fullImage%d added", (int)self.itemId);
+//    }
+    if (![self generateFullImage]) {
+        return NO;
+    }
+    if (![self generateThumnailImage]) {
+        //
+    }
+    
+    return YES;
+}
+
+
+-(BOOL) generateFullImage {
+    NSString *fullImageName = [NSString stringWithFormat:@"jfull_%@", self.oldImageName];
+    fullImageName = [Utilities replacePathExtentionTo:@"jpg" forString:fullImageName];
+    
+    NSString *pathToFile = [[NSBundle mainBundle] pathForResource:fullImageName
+                                                           ofType:nil];
+    NSString *copyFilePath = [Utilities getPathForFolder:fullImagesfolderName];
+    copyFilePath = [copyFilePath stringByAppendingPathComponent: self.fullImage];
+    
+    if (!pathToFile || !copyFilePath) {
+        return NO;
+    }
+    if ([[NSFileManager defaultManager] fileExistsAtPath:copyFilePath]) {
+        [[NSFileManager defaultManager] removeItemAtPath:copyFilePath
+                                                   error:nil];
+    }
+    
+    NSError *error = nil;
+    BOOL isSuccess = [[NSFileManager defaultManager] copyItemAtPath:pathToFile
+                                                        toPath:copyFilePath
+                                                         error:&error];
+    
+    if (!isSuccess) {
+        $l(@"copy image error -> %@", error);
+        return NO;
+    } else {
+        $l(@"---fullImage%d added", (int)self.itemId);
+    }
+    
+    return YES;
+}
+
+-(BOOL) generateThumnailImage {
     NSString *thumbnailImageName = [NSString stringWithFormat:@"thumb_%@", self.oldImageName];
     NSString *pathToFile = [[NSBundle mainBundle] pathForResource:thumbnailImageName
                                                            ofType:nil];
     NSString *copyFilePath = [Utilities getPathForFolder:thumbnailImagesfolderName];
     copyFilePath = [copyFilePath stringByAppendingPathComponent: self.thumbnailImage];
     if (!pathToFile || !copyFilePath) {
+        $l(@" --- Error!! File not exists by this path");
         return NO;
     }
     if ([[NSFileManager defaultManager] fileExistsAtPath:copyFilePath]) {
@@ -64,31 +157,6 @@ static NSString * const thumbnailImagesfolderName = @"thumbnail";
         $l(@"---thumbnailImage%d added", (int)self.itemId);
     }
     
-    
-    NSString *fullImageName = [NSString stringWithFormat:@"jfull_%@", self.oldImageName];
-    fullImageName = [Utilities replacePathExtentionTo:@"jpg" forString:fullImageName];
-    
-    pathToFile = [[NSBundle mainBundle] pathForResource:fullImageName
-                                                 ofType:nil];
-    copyFilePath = [Utilities getPathForFolder:fullImagesfolderName];
-    copyFilePath = [copyFilePath stringByAppendingPathComponent: self.fullImage];
-    
-    if (!pathToFile || !copyFilePath) {
-        return NO;
-    }
-    if ([[NSFileManager defaultManager] fileExistsAtPath:copyFilePath]) {
-        [[NSFileManager defaultManager] removeItemAtPath:copyFilePath
-                                                   error:nil];
-    }
-    isSuccess = [[NSFileManager defaultManager] copyItemAtPath:pathToFile
-                                                        toPath:copyFilePath
-                                                         error:&error];
-    if (!isSuccess) {
-        $l(@"copy image error -> %@", error);
-        return NO;
-    } else {
-        $l(@"---fullImage%d added", (int)self.itemId);
-    }
     return YES;
 }
 

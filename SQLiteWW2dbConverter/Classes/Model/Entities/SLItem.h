@@ -49,6 +49,8 @@
 
 @property (nonatomic, assign) NSInteger indexOfObjectWhereDate;// added temp @property
 @property (nonatomic, strong) NSString *imageName;
+@property (nonatomic, assign) NSInteger oldPrimaryKey;
+@property (nonatomic, assign) NSInteger oldZType;
 
 
 @end

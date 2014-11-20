@@ -15,6 +15,6 @@
             isMap, ipadVisible, iphoneVisible, ipadPriority, iphonePriority, dateSpot,
             dateFrom, dateTo, dateMask, dateVisibleOnTimeline, timelineImage, backgroundImage,
             packId, typeId, contentTypeId, coverId, copyrightExpiryDate, copyrightOwner,
-            copyrightNotes, favorite, tags, panorams, images, videos, audio, date, amendedUser, lastChangeDate, indexOfObjectWhereDate, imageName;
+            copyrightNotes, favorite, tags, panorams, images, videos, audio, date, amendedUser, lastChangeDate, indexOfObjectWhereDate, imageName, oldPrimaryKey, oldZType;
 
 @end

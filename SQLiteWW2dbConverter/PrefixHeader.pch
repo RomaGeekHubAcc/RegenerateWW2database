@@ -56,6 +56,9 @@ static NSString * const z_dimension = @"ZDIMENSION";
 static NSString * const z_latitude = @"ZLATITUDE";
 static NSString * const z_longtitude = @"ZLONGITUDE";
 static NSString * const z_radius = @"ZRADIUS";
+static NSString * const z_appearOnTimeline = @"ZAPPEARSONTIMELINE";
+static NSString * const z_noAttach = @"ZNOWHITEBORDERASATTACHMENT";
+static NSString * const z_sincUnicId = @"ZSYNCUNIQUEID";
 
 //////////////////////////////////////////////////////
 

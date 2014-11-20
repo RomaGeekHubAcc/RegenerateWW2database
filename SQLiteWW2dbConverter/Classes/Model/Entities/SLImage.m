@@ -41,54 +41,6 @@ static NSString * const thumbnailImagesfolderName = @"thumbnail";
 #pragma mark - Interface methods
 
 -(BOOL) generateFullAndThumnailImages {
-//    NSString *thumbnailImageName = [NSString stringWithFormat:@"thumb_%@", self.oldImageName];
-//    NSString *pathToFile = [[NSBundle mainBundle] pathForResource:thumbnailImageName
-//                                                           ofType:nil];
-//    NSString *copyFilePath = [Utilities getPathForFolder:thumbnailImagesfolderName];
-//    copyFilePath = [copyFilePath stringByAppendingPathComponent: self.thumbnailImage];
-//    if (!pathToFile || !copyFilePath) {
-//        return NO;
-//    }
-//    if ([[NSFileManager defaultManager] fileExistsAtPath:copyFilePath]) {
-//        [[NSFileManager defaultManager] removeItemAtPath:copyFilePath
-//                                                   error:nil];
-//    }
-//    NSError *error = nil;
-//    BOOL isSuccess = [[NSFileManager defaultManager] copyItemAtPath:pathToFile
-//                                                             toPath:copyFilePath
-//                                                              error:&error];
-//    if (!isSuccess) {
-//        $l(@"copy image error -> %@", error);
-//        return NO;
-//    } else {
-//        $l(@"---thumbnailImage%d added", (int)self.itemId);
-//    }
-//    
-//    
-//    NSString *fullImageName = [NSString stringWithFormat:@"jfull_%@", self.oldImageName];
-//    fullImageName = [Utilities replacePathExtentionTo:@"jpg" forString:fullImageName];
-//    
-//    pathToFile = [[NSBundle mainBundle] pathForResource:fullImageName
-//                                                 ofType:nil];
-//    copyFilePath = [Utilities getPathForFolder:fullImagesfolderName];
-//    copyFilePath = [copyFilePath stringByAppendingPathComponent: self.fullImage];
-//    
-//    if (!pathToFile || !copyFilePath) {
-//        return NO;
-//    }
-//    if ([[NSFileManager defaultManager] fileExistsAtPath:copyFilePath]) {
-//        [[NSFileManager defaultManager] removeItemAtPath:copyFilePath
-//                                                   error:nil];
-//    }
-//    isSuccess = [[NSFileManager defaultManager] copyItemAtPath:pathToFile
-//                                                        toPath:copyFilePath
-//                                                         error:&error];
-//    if (!isSuccess) {
-//        $l(@"copy image error -> %@", error);
-//        return NO;
-//    } else {
-//        $l(@"---fullImage%d added", (int)self.itemId);
-//    }
     if (![self generateFullImage]) {
         return NO;
     }
@@ -126,7 +78,7 @@ static NSString * const thumbnailImagesfolderName = @"thumbnail";
         $l(@"copy image error -> %@", error);
         return NO;
     } else {
-        $l(@"---fullImage%d added", (int)self.itemId);
+        $l(@"---fullImage%d added", (int)self.imageId);
     }
     
     return YES;
@@ -138,9 +90,14 @@ static NSString * const thumbnailImagesfolderName = @"thumbnail";
                                                            ofType:nil];
     NSString *copyFilePath = [Utilities getPathForFolder:thumbnailImagesfolderName];
     copyFilePath = [copyFilePath stringByAppendingPathComponent: self.thumbnailImage];
-    if (!pathToFile || !copyFilePath) {
-        $l(@" --- Error!! File not exists by this path");
-        return NO;
+    if (!pathToFile) {
+        pathToFile = [Utilities getPathForFolder:@"thumb-copy"];
+        pathToFile = [pathToFile stringByAppendingPathComponent:self.fullImage];
+        BOOL fileExist = [[NSFileManager defaultManager] fileExistsAtPath:pathToFile];
+        if (!fileExist) {
+            return NO;
+        }
+        
     }
     if ([[NSFileManager defaultManager] fileExistsAtPath:copyFilePath]) {
         [[NSFileManager defaultManager] removeItemAtPath:copyFilePath
@@ -154,7 +111,7 @@ static NSString * const thumbnailImagesfolderName = @"thumbnail";
         $l(@"copy image error -> %@", error);
         return NO;
     } else {
-        $l(@"---thumbnailImage%d added", (int)self.itemId);
+        $l(@"---thumbnailImage%d added", (int)self.imageId);
     }
     
     return YES;

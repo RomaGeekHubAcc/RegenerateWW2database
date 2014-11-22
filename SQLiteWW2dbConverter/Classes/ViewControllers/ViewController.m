@@ -26,6 +26,20 @@
 #import "ViewController.h"
 
 
+
+typedef NS_ENUM(NSUInteger, NewDbCoverId) {
+    NewDbCoverIdVideo = 29,
+    NewDbCoverIdPhoto = 28,
+    NewDbCoverIdPerson = 19,
+    NewDbCoverIdEventShort1 = 20,
+    NewDbCoverIdEventShort2 = 21,
+    NewDbCoverIdEventShort3 = 22,
+    NewDbCoverIdEventLong1 = 23,
+    NewDbCoverIdEventLong2 = 24,
+    NewDbCoverIdEventLong3 = 25,
+    NewDbCoverIdEventLong4 = 26,
+};
+
 typedef NS_ENUM(NSUInteger, NewDbType) {
     NewDbTypeBiographies = 16,
     NewDbTypeEventShort = 28,
@@ -43,6 +57,8 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 };
 
 @interface ViewController () {
+    NSMutableArray *additionalItems;
+    
     NSMutableArray *items;
     NSMutableArray *images;
     NSMutableArray *videos;
@@ -64,6 +80,8 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    additionalItems = [[NSMutableArray alloc] init];
     
     self.activityIndicator.hidden = YES;
 }
@@ -103,20 +121,6 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 
 #pragma mark - Private methods
 
--(NSArray *) getAllDeletedUnicIds {
-    NSMutableArray *unicIds = [[NSMutableArray alloc] init];
-    
-    FMResultSet *rs = [[FMDBManager sharedInstance].fmDataBase executeQuery:@"SELECT * FROM ZIMPDELETEDOBJECT"];
-    
-    while ([rs next]) {
-        NSString *unicId = [rs stringForColumn:z_sincUnicId];
-        if (unicId) {
-            [unicIds addObject:unicId];
-        }
-    }
-    return unicIds;
-}
-
 -(void) fetchDataFromOldDatabase { $c
     [[FMDBManager sharedInstance] openDataBaseWithName:ww2_db_name];
     
@@ -128,6 +132,7 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
     dimensions = [self getAllDimensions];
     tags = [self getAllTags];
     itemsToTagRelationships = [self getAllItemToTagRelationship];
+    [self addRelationshipsForAdditionalItems];
     
     [[FMDBManager sharedInstance] closeDatabase];
 }
@@ -311,9 +316,54 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 }
 
 
+-(SLItem *) createAdditionalItemFromItem:(SLItem *)item {
+    SLItem *addItem = [[SLItem alloc] init];
+    addItem.itemId = 10000 + item.itemId;
+    addItem.title = item.title;
+    addItem.includeTitle = item.includeTitle;
+    addItem.itemShortText = item.itemShortText;
+    addItem.itemLongText = item.itemLongText;
+    addItem.visibleOnMapText = item.visibleOnMapText;
+    addItem.isMap = item.isMap;
+    addItem.ipadVisible = item.ipadVisible;
+    addItem.iphoneVisible = item.iphoneVisible;
+    addItem.ipadPriority = item.ipadPriority;
+    addItem.dateSpot = item.dateSpot;
+    addItem.dateFrom = item.dateFrom;
+    addItem.dateTo = item.dateTo;
+    addItem.date = item.date;
+    addItem.dateMask = item.dateMask;
+    addItem.dateVisibleOnTimeline = item.dateVisibleOnTimeline;
+    addItem.timelineImage = [self getTimelineImageNameForItemWithId:addItem.itemId];
+    addItem.packId = item.packId;
+    addItem.favorite = NO;
+    addItem.amendedUser = item.amendedUser;
+    addItem.lastChangeDate = item.lastChangeDate;
+    addItem.typeId = [self eventTypeWithLongText:item.itemLongText];
+    
+    if (addItem.typeId == NewDbTypeEventShort) {
+        addItem.contentTypeId = NewDbContentTypeEventShort;
+        
+    } else if (addItem.typeId == NewDbTypeEventLong) {
+        addItem.contentTypeId = NewDbContentTypeEventLong;
+    }
+    addItem.coverId = [self coverIdForContentType:addItem.contentTypeId];
+    if (!addItem.title) {
+        addItem.title = [DateFormatterManager stringFromDate:addItem.date withFormat:DATE_FORMAT_TITLE];
+    }
+    
+    return addItem;
+}
+
+-(NSString *) getTimelineImageNameForItemWithId:(NSInteger)itemId {
+    return [NSString stringWithFormat:@"timelineImage%ld", (long)itemId];
+}
+
 -(NSMutableArray *) getAllItems { $c
     
     NSInteger primaryKey;
+    
+    int videosCount = 0, imagesCount = 0;
     
     NSMutableArray *itemsArray = [[NSMutableArray alloc] init];
     NSMutableIndexSet *toRemoveObjIndexes = [NSMutableIndexSet indexSet];
@@ -331,6 +381,9 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
         item.ipadVisible = YES;
         
         primaryKey = [rs intForColumn:z_ent];
+        if (primaryKey != 7) {
+            continue;
+        }
 //        if (primaryKey == 6) { //photo
 //            if ([rs objectForColumnName:z_noAttach] == [NSNull null]) {
 //                continue;
@@ -360,16 +413,14 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
 //            if (![rs stringForColumn:z_posterFrameFileName] || ![rs stringForColumn:z_url] || ![rs intForColumn:z_item]) {
 //                continue;
 //            }
-//            int indItemWithDate = [rs intForColumn:z_item];
-//            if (item.itemId == 46 || item.itemId == 47 || item.itemId == 49) {
-//                //
-//            }
-//            item.indexOfObjectWhereDate = indItemWithDate;
+//            item.indexOfObjectWhereDate = [rs intForColumn:z_item];
 //        }
-        item.timelineImage = [NSString stringWithFormat:@"timelineImage%ld", (long)item.itemId];
+        item.timelineImage = [self getTimelineImageNameForItemWithId:item.itemId];
         
-        item.itemShortText = [rs stringForColumn:z_summary] ? [rs stringForColumn:z_summary] : @"";
-        item.itemLongText = [rs stringForColumn:z_text] ? [rs stringForColumn:z_text] : @"";
+        NSString *summary = [rs stringForColumn:z_summary];
+        item.itemShortText =  summary ? summary : @"";
+        NSString *lText = [rs stringForColumn:z_text];
+        item.itemLongText = lText ? lText : @"";
         
         item.lastChangeDate = [self getRightDateFromDate:[rs dateForColumn:z_lastmodified]];
         
@@ -392,58 +443,101 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
         item.oldPrimaryKey = primaryKey;
         
         
-        if (primaryKey == 7) {
-            NSInteger ztype = [rs intForColumn:z_type];
-            item.oldZType = ztype;
-            if (ztype == 5442) {  // video
-                item.typeId = [self eventTypeWithLongText:item.itemLongText];
-                if (item.typeId == NewDbTypeVideo) {
-                    item.contentTypeId = NewDbContentTypeEventShort;
-                } else if (item.typeId == NewDbTypeEventLong) {
-                    item.contentTypeId = NewDbContentTypeEventLong;
-                }
-            }
-            if (ztype == 5443) {  // photo
-                item.typeId = [self eventTypeWithLongText:item.itemLongText];
-                if (item.typeId == NewDbTypeEventShort) {
-                    item.contentTypeId = NewDbContentTypeEventShort;
-                } else if (item.typeId == NewDbTypeEventLong) {
-                    item.contentTypeId = NewDbContentTypeEventLong;
-                }
-            }
-            
-            if (ztype == 5444) {
-                continue;
-                // may be, will be added later.. Items with this type haven't date
-            }
-            
-            if (ztype == 5445) {
-                item.typeId = NewDbTypeEventLong;
-                item.contentTypeId = NewDbContentTypeEventLong;
-                
-            }
-            
-            if (ztype == 5446) {
-                // will be added later
-                continue;
-            }
-            
-            if (ztype == 5447) {
-                item.typeId = NewDbTypeBiographies;
-                item.contentTypeId = NewDbContentTypePerson;
-            }
-            
-            if (ztype == 5449) {
-                item.typeId = NewDbTypeEventShort;
-                item.contentTypeId = NewDbContentTypeEventShort;
-            }
-            item.coverId = [self coverIdForContentType:item.contentTypeId];
-            
-//            if (!item.itemShortText.length) {
-//                $l(@"item #%li skiped. reason: item hasn't itemShortText", item.itemId);
+//        if (primaryKey == 7) {
+//            NSInteger ztype = [rs intForColumn:z_type];
+//            item.oldZType = ztype;
+//            if (ztype == 5442) {  // video
+//                item.typeId = NewDbTypeVideo;
+//                item.contentTypeId = NewDbContentTypeVideo;
+//                videosCount ++;
+//                if (item.itemLongText.length && item.itemShortText.length) {
+//                    SLItem *addItem = [self createAdditionalItemFromItem:item];
+//                    [additionalItems addObject:addItem];                }
+//            }
+//            if (ztype == 5443) {  // photo
+//                item.typeId = NewDbTypePhoto;
+//                item.contentTypeId = NewDbContentTypePhoto;
+//                imagesCount ++;
+//                if (item.itemLongText.length && item.itemShortText.length) {
+//                    SLItem *addItem = [self createAdditionalItemFromItem:item];
+//                    [itemsArray addObject:addItem];
+//                }
+//            }
+//            
+//            if (ztype == 5444) {
+//                continue;
+//                // may be, will be added later.. Items with this type haven't date
+//            }
+//            
+//            if (ztype == 5445) {
+//                item.typeId = NewDbTypeEventLong;
+//                item.contentTypeId = NewDbContentTypeEventLong;
+//                
+//            }
+//            
+//            if (ztype == 5446) {
+//                // will be added later
 //                continue;
 //            }
+//            
+//            if (ztype == 5447) {
+//                item.typeId = NewDbTypeBiographies;
+//                item.contentTypeId = NewDbContentTypePerson;
+//            }
+//            
+//            if (ztype == 5449) {
+//                item.typeId = NewDbTypeEventShort;
+//                item.contentTypeId = NewDbContentTypeEventShort;
+//            }
+//            item.coverId = [self coverIdForContentType:item.contentTypeId];
+//        }
+        NSInteger ztype = [rs intForColumn:z_type];
+        if (ztype == 5442) {  // video
+            item.typeId = NewDbTypeVideo;
+            item.contentTypeId = NewDbContentTypeVideo;
+            videosCount ++;
+            if (item.itemLongText.length && item.itemShortText.length) {
+                SLItem *addItem = [self createAdditionalItemFromItem:item];
+                [additionalItems addObject:addItem];                }
         }
+        if (ztype == 5443) {  // photo
+            item.typeId = NewDbTypePhoto;
+            item.contentTypeId = NewDbContentTypePhoto;
+            imagesCount ++;
+            if (item.itemLongText.length && item.itemShortText.length) {
+                SLItem *addItem = [self createAdditionalItemFromItem:item];
+                [itemsArray addObject:addItem];
+            }
+        }
+        
+        if (ztype == 5444) {
+            continue;
+            // may be, will be added later.. Items with this type haven't date
+        }
+        
+        if (ztype == 5445) {
+            item.typeId = NewDbTypeEventLong;
+            item.contentTypeId = NewDbContentTypeEventLong;
+            
+        }
+        
+        if (ztype == 5446) {
+            // will be added later
+            continue;
+        }
+        
+        if (ztype == 5447) {
+            item.typeId = NewDbTypeBiographies;
+            item.contentTypeId = NewDbContentTypePerson;
+        }
+        
+        if (ztype == 5449) {
+            item.typeId = NewDbTypeEventShort;
+            item.contentTypeId = NewDbContentTypeEventShort;
+        }
+        item.coverId = [self coverIdForContentType:item.contentTypeId];
+        
+        
         if (!item.title) {
             item.title = [DateFormatterManager stringFromDate:item.date withFormat:DATE_FORMAT_TITLE];
         }
@@ -456,23 +550,9 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
         
     }  // Finished while..
     
+    $l("\n --> videosCount = %d \n --> imagesCount = %d", videosCount, imagesCount);
     
-    // Adding date to items
-    for (SLItem *item in itemsArray) {
-        if (!item.date && item.indexOfObjectWhereDate) {
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"itemId == %d", item.indexOfObjectWhereDate];
-            SLItem *itemWithDate = [[itemsArray filteredArrayUsingPredicate:predicate] lastObject];
-            
-            item.dateFrom = itemWithDate.dateFrom;
-            item.dateTo = itemWithDate.dateTo;
-            item.date = item.dateFrom;
-            if (!item.title && itemWithDate.title) {
-                item.title = itemWithDate.title;
-            }
-        }
-    }
-//    [itemsArray removeObjectsAtIndexes:toRemoveObjIndexes];
-//    [toRemoveObjIndexes removeAllIndexes];
+    [itemsArray addObjectsFromArray:additionalItems];
     
     for (SLItem *item in itemsArray) {
         if (!item.date) {
@@ -484,13 +564,13 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
             }
             
         }
-        if (item.oldPrimaryKey == 7 && (item.oldZType == 5442 || item.oldZType == 5443)) { // якщо тип item і type photo чи video
-            if (!item.itemLongText.length || !item.itemShortText.length) {
-                [toRemoveObjIndexes addIndex:[itemsArray indexOfObject:item]];
-            } else {
-                //
-            }
-        }
+//        if (item.oldPrimaryKey == 7 && (item.oldZType == 5442 || item.oldZType == 5443)) { // якщо тип item і type photo чи video
+//            if (!item.itemLongText.length || !item.itemShortText.length) {
+//                [toRemoveObjIndexes addIndex:[itemsArray indexOfObject:item]];
+//            } else {
+//                //
+//            }
+//        }
         if (item.contentTypeId == 0 || !item.contentTypeId) {
             [toRemoveObjIndexes addIndex:[itemsArray indexOfObject:item]];
         }
@@ -514,6 +594,7 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
         $l(@"--item %d:\n  item.itemId = %ld, \n  item.typeId = %ld, \n  item.contenType = %ld, \n  item.coverId = %ld, \n  item.title = %@, \n  item.shortText = %@ \n  item.longText = %@ \n  item.date = %@\n\n", i, (long)item.itemId, (long)item.typeId, (long)item.contentTypeId, (long)item.coverId, item.title, item.itemShortText, item.itemLongText, item.date);
     }
     $l(@"\n\n -- Getting items finished, total count = %d", (int)itemsArray.count);
+    
     return itemsArray;
 }
 
@@ -602,6 +683,15 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
             if  (!videofileName || ![rs stringForColumn:z_posterFrameFileName] || ![rs intForColumn:z_item]) {
                 continue;
             }
+            
+            NSInteger itemId = [rs intForColumn:z_item];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"itemId = %ld", (long)itemId];
+            SLItem *relItem = [[items filteredArrayUsingPredicate:predicate] lastObject];
+            if (relItem.contentTypeId != NewDbContentTypeVideo) {
+                continue;
+            }
+            videoItem.itemId = itemId;
+            
             videoItem.videoCoverOldName = [rs stringForColumn:z_posterFrameFileName];
             
             videoItem.videoId = counter;
@@ -609,7 +699,7 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
             if (!videoItem.title) {
                 videoItem.title = [rs stringForColumn:z_name2];
             }
-            videoItem.itemId = [rs intForColumn:z_pk];
+            
             videoItem.position = 0;
             videoItem.localization = 0;
             videoItem.visibleOnMap = 0;
@@ -804,8 +894,8 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
     while ([rs next]) {
         SLItemToTag *itemToTag = [[SLItemToTag alloc] init];
         itemToTag.itemsToTagsMappingId = counter;
-        itemToTag.itemId =[rs intForColumn:z_7itemId];
-        itemToTag.tagId = [rs intForColumn:z_7tagId];
+        itemToTag.itemId =[rs intForColumn:z_7event];
+        itemToTag.tagId = [rs intForColumn:z_18tags];
         
         [itemsToTagsArr addObject:itemToTag];
         
@@ -816,6 +906,31 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
     return itemsToTagsArr;
 }
 
+-(NSArray *) addRelationshipsForAdditionalItems {
+    if (itemsToTagRelationships.count == 0) {
+        return nil;
+    }
+    
+    NSMutableArray *additRelations = [[NSMutableArray alloc] init];
+    
+    NSInteger index = itemsToTagRelationships.count + 1;
+    for (SLItem *addItem in additionalItems) {
+        NSInteger itemId = addItem.itemId - 10000;
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"itemId = %ld", itemId];
+        NSArray *filtredItemToTagAr = [itemsToTagRelationships filteredArrayUsingPredicate:predicate];
+        for (SLItemToTag *itToTag in filtredItemToTagAr) {
+            SLItemToTag *newItToTag = itToTag;
+            newItToTag.itemId = addItem.itemId;
+            newItToTag.itemsToTagsMappingId = index;
+            index ++;
+            [itemsToTagRelationships addObject:newItToTag];
+        }
+    }
+    
+    
+    return additRelations;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -835,7 +950,13 @@ typedef NS_ENUM(NSUInteger, NewDbContentType) {
         return [coverId integerValue];
     }
     if (contentType == NewDbContentTypePerson) {
-        return 19;
+        return NewDbCoverIdPerson;
+    }
+    if (contentType == NewDbContentTypeVideo) {
+        return NewDbCoverIdVideo;
+    }
+    if (contentType == NewDbContentTypePhoto) {
+        return NewDbCoverIdPhoto;
     }
     
     return 0;

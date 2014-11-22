@@ -63,8 +63,8 @@ static NSString * const z_sincUnicId = @"ZSYNCUNIQUEID";
 //////////////////////////////////////////////////////
 
 // KEYS FOR TABLE Z_7TAGS
-static NSString * const z_7tagId = @"Z_18TAGS";
-static NSString * const z_7itemId = @"Z_7EVENTS1";
+static NSString * const z_18tags = @"Z_18TAGS";
+static NSString * const z_7event = @"Z_7EVENTS1";
 
 //////////////////////////////////////////////////////
 
